@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up">
+    <div class="col-lg-10">
+        <!-- 食譜標頭與圖片 -->
+        <div class="card recipe-card border-0 mb-4 overflow-hidden">
+            {% if recipe.image_url %}
+            <img src="{{ recipe.image_url }}" class="w-100" alt="{{ recipe.title }}" style="max-height: 450px; object-fit: cover;">
+            {% else %}
+            <div class="recipe-img-placeholder w-100" style="height: 350px;">
+                <i class="bi bi-image" style="font-size: 5rem; opacity: 0.5;"></i>
+            </div>
+            {% endif %}
+            
+            <div class="card-body p-5">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-3 text-dark">{{ recipe.title }}</h1>
+                        <p class="text-muted fs-5 mb-0">
+                            <i class="bi bi-person-circle text-primary"></i> 作者：<span class="fw-semibold text-dark">{{ recipe.username }}</span> 
+                            <span class="mx-2">|</span> 
+                            <i class="bi bi-calendar3"></i> {{ recipe.created_at[:10] }}
+                        </p>
+                    </div>
+                    {% if session.get('user_id') %}
+                        {% if is_saved %}
+                        <form action="{{ url_for('recipe.unsave_recipe', recipe_id=recipe.id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger shadow-sm px-4 rounded-pill"><i class="bi bi-heart-fill"></i> 已收藏</button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('recipe.save_recipe', recipe_id=recipe.id) }}" method="POST">
+                            <button type="submit" class="btn btn-outline-danger shadow-sm px-4 rounded-pill"><i class="bi bi-heart"></i> 加入收藏</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {% if recipe.description %}
+                <p class="lead text-secondary" style="line-height: 1.8;">{{ recipe.description }}</p>
+                {% endif %}
+                
+                <hr class="my-5 border-light">
+
+                <!-- 食材與步驟區塊 -->
+                <div class="row g-5">
+                    <div class="col-md-5">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="fw-bold text-dark mb-0"><i class="bi bi-basket text-primary me-2"></i>準備食材</h3>
+                            <a href="{{ url_for('recipe.shopping_list', recipe_id=recipe.id) }}" target="_blank" class="btn btn-sm btn-light border shadow-sm text-dark rounded-pill px-3">
+                                <i class="bi bi-printer"></i> 購物清單
+                            </a>
+                        </div>
+                        <div class="bg-light p-4" style="border-radius: 16px;">
+                            <ul class="list-unstyled mb-0 fs-5" style="line-height: 2.2;">
+                                {% for item in recipe.ingredients.split('\n') %}
+                                    {% if item.strip() %}
+                                    <li class="border-bottom border-white pb-2 mb-2"><i class="bi bi-check-circle-fill text-primary me-3 opacity-75"></i> {{ item }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h3 class="fw-bold text-dark mb-4"><i class="bi bi-list-ol text-primary me-2"></i>料理步驟</h3>
+                        <div class="steps-container">
+                            {% for step in recipe.steps.split('\n') %}
+                                {% if step.strip() %}
+                                <div class="d-flex mb-4">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <span class="badge bg-primary rounded-circle p-2 fs-6 shadow-sm" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">{{ loop.index }}</span>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <p class="fs-5 text-secondary mb-0" style="line-height: 1.8;">{{ step }}</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 評論區塊 -->
+        <div class="card recipe-card border-0 p-5 mt-4">
+            <h3 class="fw-bold text-dark mb-4"><i class="bi bi-chat-square-text text-primary me-2"></i>評價與討論</h3>
+            
+            {% if session.get('user_id') %}
+            <form action="{{ url_for('recipe.submit_review', recipe_id=recipe.id) }}" method="POST" class="bg-light p-4 rounded-4 mb-5 shadow-sm">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold text-secondary">給予評分</label>
+                        <select name="rating" class="form-select border-0 shadow-sm" required>
+                            <option value="5" selected>⭐⭐⭐⭐⭐ 非常棒</option>
+                            <option value="4">⭐⭐⭐⭐ 不錯</option>
+                            <option value="3">⭐⭐⭐ 普通</option>
+                            <option value="2">⭐⭐ 需要改進</option>
+                            <option value="1">⭐ 不滿意</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <textarea name="comment" class="form-control border-0 shadow-sm" rows="3" placeholder="分享您做這道菜的心得..." style="border-radius: 12px;"></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill">送出評論</button>
+                </div>
+            </form>
+            {% else %}
+            <div class="alert alert-light border shadow-sm text-center py-4 rounded-4 mb-5">
+                <p class="mb-0 text-muted fs-5"><a href="{{ url_for('auth.login_page') }}" class="text-primary fw-bold text-decoration-none">登入</a> 後即可發表您的料理心得</p>
+            </div>
+            {% endif %}
+
+            <div class="reviews-list">
+                {% for review in reviews %}
+                <div class="d-flex mb-4 pb-4 border-bottom border-light">
+                    <div class="me-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                            {{ review.username[0] | upper }}
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h5 class="fw-bold text-dark mb-0">{{ review.username }}</h5>
+                            <span class="text-muted small">{{ review.created_at[:10] }}</span>
+                        </div>
+                        <div class="mb-2">
+                            {% for i in range(review.rating) %}<i class="bi bi-star-fill text-warning"></i>{% endfor %}
+                            {% for i in range(5 - review.rating) %}<i class="bi bi-star text-warning"></i>{% endfor %}
+                        </div>
+                        <p class="text-secondary mb-0" style="line-height: 1.6;">{{ review.comment }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-left-dots text-light opacity-50" style="font-size: 4rem;"></i>
+                    <p class="text-muted mt-3 fs-5">目前還沒有評論，成為第一個留言的人吧！</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

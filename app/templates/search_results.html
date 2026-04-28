@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-5 fade-in-up">
+    <div class="col-12">
+        <h2 class="fw-bold text-dark mb-3">搜尋結果</h2>
+        <p class="text-secondary fs-5">您搜尋的關鍵字：「<span class="text-primary fw-bold">{{ query }}</span>」</p>
+        <hr class="border-light mt-4">
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for recipe in recipes %}
+    <div class="col fade-in-up" style="animation-delay: {{ loop.index0 * 0.1 }}s;">
+        <a href="{{ url_for('recipe.recipe_detail', recipe_id=recipe.id) }}" class="text-decoration-none">
+            <div class="card h-100 recipe-card border-0">
+                {% if recipe.image_url %}
+                <img src="{{ recipe.image_url }}" class="card-img-top" alt="{{ recipe.title }}" style="height: 220px; object-fit: cover;">
+                {% else %}
+                <div class="recipe-img-placeholder" style="height: 220px;">
+                    <i class="bi bi-camera"></i>
+                </div>
+                {% endif %}
+                <div class="card-body p-4">
+                    <h5 class="card-title text-dark fs-4 mb-2">{{ recipe.title }}</h5>
+                    <p class="text-muted small mb-3"><i class="bi bi-person-fill text-primary"></i> {{ recipe.username }}</p>
+                    <p class="card-text text-secondary">{{ recipe.description[:60] }}{% if recipe.description and recipe.description|length > 60 %}...{% endif %}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5 fade-in-up">
+        <i class="bi bi-search text-muted opacity-50" style="font-size: 4rem;"></i>
+        <h4 class="mt-4 text-dark fw-bold">找不到相符的食譜</h4>
+        <p class="text-secondary fs-5 mt-2">試試看換個關鍵字搜尋，或是自己來發布第一篇吧！</p>
+        <a href="{{ url_for('recipe.index') }}" class="btn btn-outline-primary mt-3 px-4 rounded-pill">返回首頁</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

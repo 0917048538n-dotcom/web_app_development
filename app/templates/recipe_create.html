@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up">
+    <div class="col-md-8 col-lg-6">
+        <div class="card recipe-card border-0 p-5 shadow-lg" style="border-radius: 24px;">
+            <div class="text-center mb-4">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-pencil-square" style="font-size: 2.5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-dark">發布新食譜</h2>
+                <p class="text-muted">與社群分享您的美味秘方</p>
+            </div>
+            
+            <form action="{{ url_for('recipe.create_recipe_process') }}" method="POST">
+                <div class="mb-4">
+                    <label for="title" class="form-label fw-bold text-secondary">食譜名稱 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-lg bg-light border-0" id="title" name="title" required placeholder="例如：阿嬤的獨門紅燒肉">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="description" class="form-label fw-bold text-secondary">簡短介紹</label>
+                    <textarea class="form-control bg-light border-0" id="description" name="description" rows="2" placeholder="簡單介紹這道菜的特色..."></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="ingredients" class="form-label fw-bold text-secondary">準備食材 <span class="text-danger">*</span></label>
+                        <textarea class="form-control bg-light border-0" id="ingredients" name="ingredients" rows="6" required placeholder="一行一樣食材，例如：&#10;豬五花肉 500g&#10;醬油 2大匙&#10;蒜頭 3瓣"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label for="steps" class="form-label fw-bold text-secondary">料理步驟 <span class="text-danger">*</span></label>
+                        <textarea class="form-control bg-light border-0" id="steps" name="steps" rows="6" required placeholder="一行一個步驟，例如：&#10;1. 豬肉切塊川燙備用&#10;2. 熱鍋爆香蒜頭&#10;3. 加入豬肉與醬油燉煮"></textarea>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label for="image_url" class="form-label fw-bold text-secondary"><i class="bi bi-link-45deg"></i> 封面圖片網址 (選填)</label>
+                    <input type="url" class="form-control bg-light border-0" id="image_url" name="image_url" placeholder="https://example.com/image.jpg">
+                    <div class="form-text mt-2">請提供可公開存取的圖片網址，讓您的食譜更吸引人！</div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold fs-5 shadow">發布食譜</button>
+                    <a href="{{ url_for('recipe.index') }}" class="btn btn-link text-muted text-decoration-none mt-2">取消並返回首頁</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

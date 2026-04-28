@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>購物清單 - {{ recipe.title }}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+        body { font-family: 'Outfit', sans-serif; background-color: #f8f9fa; }
+        .shopping-card {
+            background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 40px;
+        }
+        .form-check-input:checked { background-color: #ff6b6b; border-color: #ff6b6b; }
+        .form-check-label { font-size: 1.2rem; margin-left: 8px; }
+        .form-check-input:checked ~ .form-check-label { text-decoration: line-through; color: #adb5bd; }
+        @media print {
+            body { background-color: white; }
+            .shopping-card { box-shadow: none; border: 2px solid #000; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="d-flex justify-content-between mb-3 no-print">
+                    <a href="{{ url_for('recipe.recipe_detail', recipe_id=recipe.id) }}" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-arrow-left"></i> 返回食譜</a>
+                    <button onclick="window.print()" class="btn btn-primary rounded-pill"><i class="bi bi-printer"></i> 列印清單</button>
+                </div>
+                
+                <div class="shopping-card">
+                    <div class="text-center mb-5">
+                        <i class="bi bi-cart3 text-primary mb-3 d-inline-block" style="font-size: 3rem; color: #ff6b6b !important;"></i>
+                        <h2 class="fw-bold">購物清單</h2>
+                        <p class="text-muted fs-5 mb-0">{{ recipe.title }}</p>
+                    </div>
+
+                    <div class="ingredients-list">
+                        {% for item in recipe.ingredients.split('\n') %}
+                            {% if item.strip() %}
+                            <div class="form-check border-bottom pb-3 mb-3">
+                                <input class="form-check-input fs-4" type="checkbox" value="" id="check-{{ loop.index }}">
+                                <label class="form-check-label text-dark" for="check-{{ loop.index }}">
+                                    {{ item }}
+                                </label>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="text-center mt-5 pt-3 border-top text-muted small">
+                        由饗食譜 Recipe Hub 自動產生
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
